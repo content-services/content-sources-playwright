@@ -85,10 +85,9 @@ export const convertProxyToPlaywrightFormat = (proxyUrl: string) => {
         // password: url.password
     };
 }
-const authFile = path.join(__dirname, '../.auth/user.json');
 
 export const storeStorageStateAndToken = async (page: Page) => {
-    const { cookies } = await page.context().storageState({ path: authFile });
+    const { cookies } = await page.context().storageState({ path: path.join(__dirname, '../../.auth/user.json') });
     process.env.TOKEN = `Bearer ${cookies.find(cookie => cookie.name === "cs_jwt")?.value}`
 }
 

@@ -21,6 +21,9 @@ export default defineConfig({
     expect: { timeout: 15000 },
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
+        launchOptions: {
+            args: ['--use-fake-device-for-media-stream'],
+        },
         /* Base URL to use in actions like `await page.goto('/')`. */
         // This is used for both the API and the UI navigation
         // This can be overridden in tests for external api's should that be needed.
@@ -40,19 +43,25 @@ export default defineConfig({
         { name: 'setup', testMatch: /.*\.setup\.ts/ },
         {
             name: 'Google Chrome',
+            testIgnore: /.*UploadRepo.spec.ts/,
             use: {
-                ...devices['Desktop Chrome'], channel: 'chrome',
+                ...devices['Desktop Chrome'],
+                channel: 'chrome',
                 // Use prepared auth state.
                 storageState: './.auth/user.json',
-
             },
             dependencies: ['setup'],
         },
-        // {
-        //     name: 'firefox',
-        //     use: { ...devices['Desktop Firefox'] },
-        // },
-
+        {
+            // We need to use firefox for upload tests
+            name: 'Firefox',
+            testMatch: [/.*UploadRepo.spec.ts/],
+            use: {
+                ...devices['Desktop Firefox'],  // Use prepared auth state.
+                storageState: './.auth/user.json',
+            },
+            dependencies: ['setup'],
+        },
         // {
         //     name: 'webkit',
         //     use: { ...devices['Desktop Safari'] },

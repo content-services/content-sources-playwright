@@ -16,9 +16,9 @@ test('Create custom repositories', async ({ page }) => {
         'one',
         'current',
         //can uncomment below to add 3 more repos
-        // 'two',
-        // 'three', 
-        // 'four'
+        'two',
+        'three',
+        'four'
     ]
 
     //Do not use chain methods when using await (like foreach/map/etc..)
