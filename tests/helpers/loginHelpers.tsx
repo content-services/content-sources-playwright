@@ -5,6 +5,7 @@ export const logout = async (page: Page) => {
     const button = await page.locator(
         "div.pf-v5-c-toolbar__item.pf-m-hidden.pf-m-visible-on-lg.pf-v5-u-mr-0 > button"
     );
+
     await button.click();
 
     await expect(async () =>
@@ -46,9 +47,6 @@ export const logInWithUsernameAndPassword = async (
     const login = page.getByRole("textbox");
     await login.fill(username);
     await login.press("Enter");
-    await expect(async () =>
-        page.getByRole("textbox", { name: "Password" }).isVisible()
-    ).toPass();
     const passwordField = page.getByRole("textbox", { name: "Password" });
     await passwordField.fill(password);
     await passwordField.press("Enter");
@@ -59,9 +57,6 @@ export const logInWithUsernameAndPassword = async (
     }).toPass();
 
     await expect(async () => {
-        // const zeroState = page.locator("div.pf-v5-l-grid__item.bannerBefore > div > div.pf-v5-u-pt-lg > h1")
-        // const repositoriesListPage = page.getByText("View all repositories within your organization.")
-        // return expect(repositoriesListPage.or(zeroState)).toBeVisible()
         const topRightNavButton = page.locator(
             "div.pf-v5-c-toolbar__item.pf-m-hidden.pf-m-visible-on-lg.pf-v5-u-mr-0 > button"
         )
@@ -92,10 +87,15 @@ export const storeStorageStateAndToken = async (page: Page) => {
 }
 
 export const closePopupsIfExist = async (page: Page) => {
-    if (await page.locator(`button[id^="pendo-close-guide-"]`).isVisible()) {
-        await page.locator(`button[id^="pendo-close-guide-"]`).click()
-    }
-    if (await page.locator(`button[id="truste-consent-button"]`).isVisible()) {
-        await page.locator(`button[id="truste-consent-button"]`).click()
+    const locatorsToCheck = [
+        page.locator(`button[id^="pendo-close-guide-"]`),
+        page.locator(`button[id="truste-consent-button"]`),
+        page.getByLabel('close-notification')
+    ]
+
+    for (const locator of locatorsToCheck) {
+        await page.addLocatorHandler(locator, async () => {
+            await locator.click()
+        });
     }
 }

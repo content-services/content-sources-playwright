@@ -1,5 +1,5 @@
-import { test, expect, chromium, type Browser, type Page } from '@playwright/test';
-import { navigateToRepositories, waitForLocatorThenClick } from './helpers/navHelpers';
+import { test, expect, type Page } from '@playwright/test';
+import { navigateToRepositories } from './helpers/navHelpers';
 
 test.beforeEach(async ({ page }) => {
     await deleteAllRepos(page)
@@ -42,9 +42,7 @@ const deleteAllRepos = async (page: Page) => {
         await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1/repositories/bulk_delete/') && resp.status() === 204)
     }
 
-    await expect(async () => {
-        return expect(page.getByText('To get started, create a custom repository')).toBeVisible()
-    }).toPass();
+    await expect(page.getByText('To get started, create a custom repository')).toBeVisible()
 }
 
 const addRepository = async (page: Page, name: string, url: string) => {
@@ -58,7 +56,7 @@ const addRepository = async (page: Page, name: string, url: string) => {
     await expect(page.locator(`div[id^="pf-modal-part"]`).first()).toBeVisible()
 
     // An example of a custom method that accepts a locator
-    await waitForLocatorThenClick(page.getByPlaceholder('Enter name'))
+    await page.getByPlaceholder('Enter name').click()
 
     await page.getByPlaceholder('Enter name').fill(name);
     await page.getByPlaceholder('https://').fill(url);
@@ -67,19 +65,17 @@ const addRepository = async (page: Page, name: string, url: string) => {
     // And can prevent the test getting stuck at certain points due to too rapid automation
     // await page.waitForTimeout(100)
 
-    await waitForLocatorThenClick(page.getByRole('button', { name: 'filter architecture' }))
+    await page.getByRole('button', { name: 'filter architecture' }).click()
 
     await page.getByRole('option', { name: 'x86_64' }).click();
 
-    await waitForLocatorThenClick(page.getByRole('button', { name: 'filter version' }))
+    await page.getByRole('button', { name: 'filter version' }).click()
 
     await page.getByRole('menuitem', { name: 'el9' }).locator('label').click();
     await page.getByRole('menuitem', { name: 'el8' }).locator('label').click();
     await page.getByRole('button', { name: 'filter version' }).click();
 
-    await waitForLocatorThenClick(
-        page.getByRole('button', { name: 'Save' })
-    )
+    await page.getByRole('button', { name: 'Save' }).click()
 
     // Example of waiting for a successful api call
     await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1.0/repositories/bulk_create/') && resp.status() === 201)

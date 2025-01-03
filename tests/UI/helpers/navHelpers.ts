@@ -14,15 +14,3 @@ export const navigateToRepositories = async (page: Page) => {
         await page.getByRole('button', { name: 'Add repositories now' }).click();
     }
 }
-
-export const waitForLocatorThenClick = async (locator: Locator) => {
-    await expect(
-        locator
-    ).toBeVisible()
-
-    await expect(
-        locator
-    ).toBeEnabled()
-    await locator.click()
-}
-
