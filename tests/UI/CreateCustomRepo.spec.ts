@@ -15,10 +15,10 @@ test('Create custom repositories', async ({ page }) => {
     const nameList = [
         'one',
         'current',
-        //can uncomment below to add 3 more repos
         'two',
-        'three',
-        'four'
+        //can uncomment below to add more repos
+        // 'three',
+        // 'four'
     ]
 
     //Do not use chain methods when using await (like foreach/map/etc..)
@@ -42,7 +42,9 @@ const deleteAllRepos = async (page: Page) => {
         await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1/repositories/bulk_delete/') && resp.status() === 204)
     }
 
-    await expect(page.getByText('To get started, create a custom repository')).toBeVisible()
+    await expect(
+        page.getByText('To get started, create a custom repository')
+    ).toBeVisible();
 }
 
 const addRepository = async (page: Page, name: string, url: string) => {

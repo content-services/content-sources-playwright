@@ -56,13 +56,9 @@ export const logInWithUsernameAndPassword = async (
         );
     }).toPass();
 
-    await expect(async () => {
-        const topRightNavButton = page.locator(
-            "div.pf-v5-c-toolbar__item.pf-m-hidden.pf-m-visible-on-lg.pf-v5-u-mr-0 > button"
-        )
-        return expect(topRightNavButton).toBeVisible()
-    }
-    ).toPass();
+    await expect(page.locator(
+        "div.pf-v5-c-toolbar__item.pf-m-hidden.pf-m-visible-on-lg.pf-v5-u-mr-0 > button"
+    )).toBeVisible()
 };
 
 export const logInWithUser1 = async (page: Page) =>
