@@ -62,13 +62,14 @@ const deleteAllRepos = async (page: Page) => {
 
     // Delete all repos
     while (await page.getByLabel('Kebab toggle').first().isVisible()) {
+        if (await page.getByLabel('Kebab toggle').first().isDisabled()) throw Error("Permissions issue found on kebab for table")
         await page.getByLabel('Kebab toggle').first().click();
         await page.getByRole('menuitem', { name: 'Delete' }).click();
         await expect(page.getByText('Remove repositories?')).toBeVisible()
         await page.getByRole('button', { name: 'Remove' }).click();
 
         // Example of waiting for a successful api call
-        await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1/repositories/bulk_delete/') && resp.status() === 204)
+        await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1/repositories/bulk_delete') && resp.status() === 204)
     }
 
     return expect(page.getByText('To get started, create a custom repository')).toBeVisible()

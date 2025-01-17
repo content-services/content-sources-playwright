@@ -1,7 +1,9 @@
 node_modules/
 /test-results/
 /playwright-report/
+/playwright-ctrf/
 /blob-report/
 /playwright/.cache/
 .env
 .auth
+bin

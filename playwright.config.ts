@@ -16,7 +16,14 @@ export default defineConfig({
     /* Opt out of parallel tests on CI. */
     workers: 1,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-    reporter: 'html',
+    reporter: !!process.env.CI ? [
+        ["list"],
+        [
+            "playwright-ctrf-json-reporter",
+            { useDetails: true, outputDir: "playwright-ctrf", outputFile: "playwright-ctrf.json" },
+        ],
+        ['html', { outputFolder: 'playwright-report' }]
+    ] : "list",
     // This may need to be increased for different environments and applications.
     expect: { timeout: 15000 },
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -24,19 +31,24 @@ export default defineConfig({
         launchOptions: {
             args: ['--use-fake-device-for-media-stream'],
         },
-        /* Base URL to use in actions like `await page.goto('/')`. */
-        // This is used for both the API and the UI navigation
-        // This can be overridden in tests for external api's should that be needed.
-        baseURL: process.env.BASE_URL,
-        //We need to make sure the TOKEN exists before setting the extraHTTPHeader for the API
         ...process.env.TOKEN ? {
             extraHTTPHeaders: {
                 Authorization: process.env.TOKEN
             }
         } : {},
+        /* Base URL to use in actions like `await page.goto('/')`. */
+        // This is used for both the API and the UI navigation
+        // This can be overridden in tests for external api's should that be needed.
+        baseURL: process.env.BASE_URL,
+        //We need to make sure the TOKEN exists before setting the extraHTTPHeader for the API
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
         ignoreHTTPSErrors: true,
+        ...process.env.PROXY ? {
+            proxy: {
+                server: process.env.PROXY,
+            }
+        } : {}
     },
     /* Configure projects for major browsers */
     projects: [
@@ -47,7 +59,6 @@ export default defineConfig({
             use: {
                 ...devices['Desktop Chrome'],
                 channel: 'chrome',
-                // Use prepared auth state.
                 storageState: './.auth/user.json',
             },
             dependencies: ['setup'],
@@ -62,31 +73,6 @@ export default defineConfig({
             },
             dependencies: ['setup'],
         },
-        // {
-        //     name: 'webkit',
-        //     use: { ...devices['Desktop Safari'] },
-        // },
-
-        /* Test against mobile viewports. */
-        // {
-        //   name: 'Mobile Chrome',
-        //   use: { ...devices['Pixel 5'] },
-        // },
-        // {
-        //   name: 'Mobile Safari',
-        //   use: { ...devices['iPhone 12'] },
-        // },
-
-        /* Test against branded browsers. */
-        // {
-        //     name: 'chromium',
-        //     use: { ...devices['Desktop Chrome'] },
-        // },
-        // {
-        //   name: 'Microsoft Edge',
-        //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-        // },
-
     ],
 
     /* Run your local dev server before starting the tests */

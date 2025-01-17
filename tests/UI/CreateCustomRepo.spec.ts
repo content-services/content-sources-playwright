@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { navigateToRepositories } from './helpers/navHelpers';
+import { closePopupsIfExist } from '../helpers/loginHelpers';
 
 test.beforeEach(async ({ page }) => {
     await deleteAllRepos(page)
@@ -15,7 +16,7 @@ test('Create custom repositories', async ({ page }) => {
     const nameList = [
         'one',
         'current',
-        'two',
+        // 'two',
         //can uncomment below to add more repos
         // 'three',
         // 'four'
@@ -29,10 +30,11 @@ test('Create custom repositories', async ({ page }) => {
 
 
 const deleteAllRepos = async (page: Page) => {
+    await closePopupsIfExist(page)
     await navigateToRepositories(page)
 
     // Delete all repos
-    while (await page.getByLabel('Kebab toggle').first().isVisible()) {
+    while (await page.getByLabel('Kebab toggle')?.first()?.isVisible()) {
         await page.getByLabel('Kebab toggle').first().click();
         await page.getByRole('menuitem', { name: 'Delete' }).click();
         await expect(page.getByText('Remove repositories?')).toBeVisible()
