@@ -58,7 +58,6 @@ export default defineConfig({
             testIgnore: /.*UploadRepo.spec.ts/,
             use: {
                 ...devices['Desktop Chrome'],
-                channel: 'chrome',
                 storageState: './.auth/user.json',
             },
             dependencies: ['setup'],
