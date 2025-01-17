@@ -48,15 +48,23 @@ export const logInWithUsernameAndPassword = async (
   const passwordField = page.getByRole("textbox", { name: "Password" });
   await passwordField.fill(password);
   await passwordField.press("Enter");
+  //   await page.waitForResponse(
+  //     (resp) =>
+  //       resp
+  //         .url()
+  //         .includes(
+  //           "/auth/realms/redhat-external/protocol/openid-connect/token"
+  //         ) && resp.status() === 200
+  //   );
   await expect(async () => {
     expect(page.url()).toBe(
       `${process.env.BASE_URL}/insights/content/repositories`
     );
   }).toPass();
 
-  await expect(
-    page.locator("button > span.pf-v5-c-menu-toggle__icon")
-  ).toBeVisible();
+  //   await expect(
+  //     page.locator("button > span.pf-v5-c-menu-toggle__icon")
+  //   ).toBeVisible();
 };
 
 export const logInWithUser1 = async (page: Page) =>

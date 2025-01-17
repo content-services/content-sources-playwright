@@ -37,7 +37,7 @@ jobs:
       - name: Publish Test Report
         uses: ctrf-io/github-test-reporter@v1
         with:
-          report-path: "./playwright-ctrf.json/playwright-ctrf.json"
+          report-path: "./playwright-ctrf/playwright-ctrf.json"
         #   pull-request-report: true
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
