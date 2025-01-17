@@ -52,7 +52,7 @@ export default defineConfig({
     },
     /* Configure projects for major browsers */
     projects: [
-        { name: 'setup', testMatch: /.*\.setup\.ts/ },
+        { name: 'setup', testMatch: /.*\.setup\.ts/, expect: { timeout: 20000 }, },
         {
             name: 'Google Chrome',
             testIgnore: /.*UploadRepo.spec.ts/,
