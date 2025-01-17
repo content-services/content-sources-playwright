@@ -55,9 +55,7 @@ export const logInWithUsernameAndPassword = async (
   }).toPass();
 
   await expect(
-    page.locator(
-      "div.pf-v5-c-toolbar__item.pf-m-hidden.pf-m-visible-on-lg.pf-v5-u-mr-0 > button"
-    )
+    page.locator("button > span.pf-v5-c-menu-toggle__icon")
   ).toBeVisible();
 };
 

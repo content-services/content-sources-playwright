@@ -53,20 +53,20 @@ export default defineConfig({
     /* Configure projects for major browsers */
     projects: [
         { name: 'setup', testMatch: /.*\.setup\.ts/ },
-        // {
-        //     name: 'Google Chrome',
-        //     testIgnore: /.*UploadRepo.spec.ts/,
-        //     use: {
-        //         ...devices['Desktop Chrome'],
-        //         channel: 'chrome',
-        //         storageState: './.auth/user.json',
-        //     },
-        //     dependencies: ['setup'],
-        // },
+        {
+            name: 'Google Chrome',
+            testIgnore: /.*UploadRepo.spec.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                channel: 'chrome',
+                storageState: './.auth/user.json',
+            },
+            dependencies: ['setup'],
+        },
         {
             // We need to use firefox for upload tests
             name: 'Firefox',
-            // testMatch: [/.*UploadRepo.spec.ts/],
+            testMatch: [/.*UploadRepo.spec.ts/],
             use: {
                 ...devices['Desktop Firefox'],  // Use prepared auth state.
                 storageState: './.auth/user.json',
