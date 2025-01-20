@@ -73,11 +73,6 @@ describe("Upload Repositories", () => {
         await expect(page.getByText('To get started, create a custom repository')).toBeVisible()
     });
 
-
-    test("Clean - Delete any leftover repos that exist", async ({ page }) => {
-        await deleteAllRepos(page)
-    })
-
 })
 
 

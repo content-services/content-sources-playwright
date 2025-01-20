@@ -37,10 +37,6 @@ describe("Custom Repositories", () => {
         // Example of waiting for a successful api call
         await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1/repositories/bulk_delete') && resp.status() === 204)
     });
-
-    test("Clean - Delete any leftover repos that exist", async ({ page }) => {
-        await deleteAllRepos(page)
-    })
 })
 
 
