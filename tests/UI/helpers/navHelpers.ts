@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 
 export const navigateToRepositories = async (page: Page) => {
     await page.goto('/insights/content/repositories');

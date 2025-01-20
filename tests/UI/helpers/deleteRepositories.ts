@@ -1,6 +1,4 @@
 import { expect, type Page } from "@playwright/test";
-import { closePopupsIfExist } from "../../helpers/loginHelpers";
-import { navigateToRepositories } from "./navHelpers";
 
 export const deleteAllRepos = async ({ request }: Page) => {
     const response = await request.get('/api/content-sources/v1/repositories/?origin=external,upload');
