@@ -4,7 +4,6 @@ on: [push]
 concurrency:
   group: integration-group # ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   Playwright-integration-test:
     runs-on:
