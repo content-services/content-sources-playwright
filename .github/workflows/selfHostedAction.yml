@@ -1,4 +1,4 @@
-name: Playwright-tests
+name: Run playwright integration tests
 on: [push]
 
 concurrency:
