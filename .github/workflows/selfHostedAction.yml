@@ -2,7 +2,7 @@ name: Run playwright tests against stage
 on: [push]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: integration-group # ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
