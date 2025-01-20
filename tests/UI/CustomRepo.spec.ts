@@ -1,53 +1,48 @@
+import { describe } from 'node:test';
 import { test, expect, type Page } from '@playwright/test';
 import { navigateToRepositories } from './helpers/navHelpers';
+import { deleteAllRepos } from './helpers/deleteRepositories';
 import { closePopupsIfExist } from '../helpers/loginHelpers';
 
-test.beforeEach(async ({ page }) => {
-    await deleteAllRepos(page)
-})
 
-test.afterEach(async ({ page }) => {
-    await deleteAllRepos(page)
-})
+describe("Custom Repositories", () => {
+    test("Clean - Delete any current repos that exist", async ({ page }) => {
+        await deleteAllRepos(page)
+    })
 
-test('Create custom repositories', async ({ page }) => {
-    await navigateToRepositories(page)
+    test('Create two custom repositories', async ({ page }) => {
+        await navigateToRepositories(page)
 
-    const nameList = [
-        'one',
-        'current',
-        // 'two',
-        //can uncomment below to add more repos
-        // 'three',
-        // 'four'
-    ]
+        const nameList = [
+            'one',
+            'current',
+        ]
 
-    //Do not use chain methods when using await (like foreach/map/etc..)
-    for (const name of nameList) {
-        await addRepository(page, name, 'https://jlsherrill.fedorapeople.org/fake-repos/revision/' + name)
-    }
-});
+        //Do not use chain methods when using await (like foreach/map/etc..)
+        for (const name of nameList) {
+            await addRepository(page, name, 'https://jlsherrill.fedorapeople.org/fake-repos/revision/' + name)
+        }
+    });
 
+    test('Delete one custom repository', async ({ page }) => {
+        await navigateToRepositories(page)
+        await closePopupsIfExist(page)
 
-const deleteAllRepos = async (page: Page) => {
-    await closePopupsIfExist(page)
-    await navigateToRepositories(page)
-
-    // Delete all repos
-    while (await page.getByLabel('Kebab toggle')?.first()?.isVisible()) {
+        if (await page.getByLabel('Kebab toggle').first().isDisabled()) throw Error("Kebab is disabled when it really shouldn't be")
         await page.getByLabel('Kebab toggle').first().click();
         await page.getByRole('menuitem', { name: 'Delete' }).click();
         await expect(page.getByText('Remove repositories?')).toBeVisible()
         await page.getByRole('button', { name: 'Remove' }).click();
 
         // Example of waiting for a successful api call
-        await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1/repositories/bulk_delete/') && resp.status() === 204)
-    }
+        await page.waitForResponse(resp => resp.url().includes('/api/content-sources/v1/repositories/bulk_delete') && resp.status() === 204)
+    });
 
-    await expect(
-        page.getByText('To get started, create a custom repository')
-    ).toBeVisible();
-}
+    test("Clean - Delete any leftover repos that exist", async ({ page }) => {
+        await deleteAllRepos(page)
+    })
+})
+
 
 const addRepository = async (page: Page, name: string, url: string) => {
     // Close toast messages if present (they can get in the way)
