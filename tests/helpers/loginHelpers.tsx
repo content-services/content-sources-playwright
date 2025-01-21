@@ -74,15 +74,6 @@ export const logInWithUser1 = async (page: Page) =>
     process.env.USER1PASSWORD
   );
 
-export const convertProxyToPlaywrightFormat = (proxyUrl: string) => {
-  const url = new URL(proxyUrl);
-  return {
-    server: `${url.protocol}//${url.host}`,
-    // username: url.username,
-    // password: url.password
-  };
-};
-
 export const storeStorageStateAndToken = async (page: Page) => {
   const { cookies } = await page
     .context()

@@ -1,11 +1,11 @@
-name: Run playwright integration tests
+name: Run playwright tests
 on: [push]
 
 concurrency:
     group: integration-group # ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 jobs:
-    Playwright-integration-test:
+    playwright-integration-test:
         runs-on:
             - codebuild-ContentSourcesCICDRunner-${{ github.run_id }}-${{ github.run_attempt }}
             - instance-size:small
