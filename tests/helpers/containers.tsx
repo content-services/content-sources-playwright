@@ -19,12 +19,23 @@ export const startContainer = async (
   containerName: string,
   imageName: string
 ) => {
+  await pullImage(imageName);
   console.log("starting container " + containerName);
   const container = await docker().createContainer({
     Image: imageName,
     name: containerName,
   });
   return container?.start();
+};
+
+const pullImage = async (imageName: string) => {
+  const images = await docker().listImages();
+  for (var image in images) {
+    if (image == imageName) {
+      return;
+    }
+  }
+  return docker().pull(imageName);
 };
 
 /*
