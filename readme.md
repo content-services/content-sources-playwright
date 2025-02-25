@@ -14,6 +14,26 @@ This stores your local credentials
 
 yarn get-tests
 
+# Setup container api for testing with clients
+
+## Podman
+
+As your user, run podman to serve the api:
+```
+podman system service -t 0 /tmp/podman.sock
+```
+
+Uncomment the DOCKER_SOCKET option in the .env file:
+```
+DOCKER_SOCKET="/tmp/podman.sock"
+```
+
+## Docker
+
+* ensure the docker service is running
+* ensure your user is part of the 'docker' user group
+
+
 # Option 1 Run local:
 
 For local testing, make sure your front-end/backend servers are running and accessible, then:
