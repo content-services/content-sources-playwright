@@ -11,7 +11,7 @@ async function sleep(ms: number): Promise<void> {
 }
 
 test("Test container", async ({}) => {
-  await startNewContainer("my_container", "localhost/client-rhel9");
+  await startNewContainer("my_container", "quay.io/jlsherri/client-rhel9");
 
   const stream = await runCommand("my_container", ["ls", "-l"]);
   if (stream != undefined) {
