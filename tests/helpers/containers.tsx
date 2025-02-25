@@ -30,12 +30,14 @@ export const startContainer = async (
 
 const pullImage = async (imageName: string) => {
   const images = await docker().listImages();
-  for (var image in images) {
-    if (image == imageName) {
+  for (var image of images) {
+    if ((image.RepoTags ? image.RepoTags : []).includes(imageName)) {
       return;
     }
   }
-  return docker().pull(imageName);
+  await docker().pull(imageName);
+  await sleep(500);
+  await pullImage(imageName);
 };
 
 /*
