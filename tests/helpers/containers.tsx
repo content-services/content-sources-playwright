@@ -49,7 +49,7 @@ export const startNewContainer = async (
 ) => {
   await killContainer(containerName);
   await startContainer(containerName, imageName);
-  await waitForContainer(containerName);
+  await waitForContainerRunning(containerName);
 };
 
 async function sleep(ms: number): Promise<void> {
@@ -61,10 +61,22 @@ const waitForContainer = async (name: string): Promise<Container | void> => {
   var waited = 10;
   while (container == undefined && waited > 0) {
     waited -= 1;
-    await sleep(1000);
+    await sleep(500);
     container = await getContainer(name);
   }
   return container;
+};
+
+const waitForContainerRunning = async (
+  name: string
+): Promise<Container | void> => {
+  var container = await getContainerInfo(name);
+  var waited = 10;
+  while (container?.State !== "running" && waited > 0) {
+    waited -= 1;
+    await sleep(500);
+    container = await getContainerInfo(name);
+  }
 };
 
 const getContainerInfo = async (name: string) => {
