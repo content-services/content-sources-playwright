@@ -48,8 +48,8 @@ export const startNewContainer = async (
   imageName: string
 ) => {
   await killContainer(containerName);
-  return await startContainer(containerName, imageName);
-  //await waitForContainer(containerName)
+  await startContainer(containerName, imageName);
+  await waitForContainer(containerName);
 };
 
 async function sleep(ms: number): Promise<void> {
