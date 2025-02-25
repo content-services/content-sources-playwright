@@ -4,8 +4,8 @@ import { killContainer, runCommand, startNewContainer } from "./containers";
 export type OSVersion = "rhel9" | "rhel8";
 
 const RemoteImages = {
-  rhel9: "quay.io/jlsherri/client-rhel9",
-  rhel8: "localhost/client-rhel9",
+  rhel9: "quay.io/jlsherri/client-rhel9:latest",
+  rhel8: "localhost/client-rhel9:latest",
 };
 
 export class RHSMClient {
