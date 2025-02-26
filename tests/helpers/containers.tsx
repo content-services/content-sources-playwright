@@ -8,14 +8,11 @@ var Docker = require("dockerode");
 const util = require("util");
 const exec = util.promisify(require("child_process").exec);
 
-const dockerHost = () => {
-  return process.env.DOCKER_SOCKET!;
-};
-
 const docker = (): Dockerode => {
-  return new Docker({ socketPath: dockerHost() });
+  return new Docker({ socketPath: process.env.DOCKER_SOCKET! });
 };
 
+// Starts a container, should not already be running, image should already be pulled
 export const startContainer = async (
   containerName: string,
   imageName: string
@@ -32,6 +29,7 @@ export const startContainer = async (
   return container?.start();
 };
 
+// Pulls an image and waits for it to finish, up to 5 seconds
 const pullImage = async (imageName: string, count?: number) => {
   const images = await docker().listImages();
   if (count == 0) {
@@ -56,7 +54,6 @@ export const startNewContainer = async (
 ) => {
   await killContainer(containerName);
   await startContainer(containerName, imageName);
-  //await waitForContainerRunning(containerName);
 };
 
 async function sleep(ms: number): Promise<void> {
@@ -120,6 +117,7 @@ export interface ExecReturn {
 }
 
 // Runs a non-interactive command and returns stdout, stderr, and the exit code
+// Defaults to a 500 ms timeout unless timeout is specified
 export const runCommand = async (
   containerName: string,
   command: string[],
