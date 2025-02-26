@@ -1,5 +1,10 @@
 import { URL } from "url";
-import { killContainer, runCommand, startNewContainer } from "./containers";
+import {
+  ExecReturn,
+  killContainer,
+  runCommand,
+  startNewContainer,
+} from "./containers";
 
 export type OSVersion = "rhel9" | "rhel8";
 
@@ -22,7 +27,25 @@ export class RHSMClient {
     return runCommand(this.name, stageConfigureCommand());
   }
 
-  async Register(activationKey?: string, orgId?: string) {
+  async RegisterRHC(activationKey?: string, orgId?: string) {
+    if (!process.env.PROD) {
+      await this.ConfigureForStage();
+    }
+    if (activationKey == undefined) {
+      activationKey = process.env.ACTIVATION_KEY_1 || "COULD_NOT_FIND_KEY";
+    }
+    if (orgId == undefined) {
+      orgId = process.env.ORG_ID_1 || "COULD_NOT_FIND_ORG_ID";
+    }
+
+    return runCommand(
+      this.name,
+      ["rhc", "connect", "-a", activationKey, "-o", orgId],
+      75000
+    );
+  }
+
+  async RegisterSubMan(activationKey?: string, orgId?: string) {
     if (!process.env.PROD) {
       await this.ConfigureForStage();
     }
@@ -34,15 +57,23 @@ export class RHSMClient {
       orgId = process.env.ORG_ID_1 || "COULD_NOT_FIND_ORG_ID";
     }
 
-    return runCommand(this.name, [
-      "subscription-manager",
-      "register",
-      "--activationkey",
-      activationKey,
-      "--org=" + orgId,
-      "--name",
+    return runCommand(
       this.name,
-    ]);
+      [
+        "subscription-manager",
+        "register",
+        "--activationkey",
+        activationKey,
+        "--org=" + orgId,
+        "--name",
+        this.name,
+      ],
+      75000
+    );
+  }
+
+  async Exec(command: string[], timeout?: number): Promise<ExecReturn | void> {
+    return runCommand(this.name, command, timeout);
   }
 
   async Unregister() {
@@ -65,6 +96,7 @@ const stageConfigureCommand = (): string[] => {
     "--server.port=443",
     "--server.prefix=/subscription",
     "--server.insecure=0",
+    "--rhsm.baseurl=https://cdn.stage.redhat.com",
   ];
   if (process.env.PROXY !== undefined) {
     const url = new URL(process.env.PROXY);
