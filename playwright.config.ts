@@ -53,14 +53,24 @@ export default defineConfig({
                 storageState: `.auth/${process.env.USER1USERNAME}.json`,
             },
             dependencies: ['setup'],
+        },      { name: 'setup', testMatch: /.*\.setup\.ts/ },
+        {
+
+            name: 'setup2',
+            grepInvert: !!process.env.PROD ? [/preview-only/, /switch-to-preview/] : [/switch-to-preview/],
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: `.auth/${process.env.USER1USERNAME}.json`,
+            },
+            dependencies: ['setup'],
         },
         ...!!process.env.PROD ?
             [{
-                name: 'Switch to preview',
+                name: 'Switch to user2',
                 grep: [/switch-to-preview/],
                 use: {
                     ...devices['Desktop Chrome'],
-                    storageState: `.auth/${process.env.USER1USERNAME}.json`,
+                    storageState: `.auth/${process.env.USER2USERNAME}.json`,
 
                 },
                 dependencies: ['setup'],//'chromium',
@@ -70,7 +80,7 @@ export default defineConfig({
                 grep: [/preview-only/],
                 use: {
                     ...devices['Desktop Chrome'],
-                    storageState: `.auth/${process.env.USER1USERNAME}.json`,
+                    storageState: `.auth/${process.env.USER2USERNAME}.json`,
                 },
                 dependencies: ['Switch to preview'],
             }] : [],
