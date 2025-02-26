@@ -24,12 +24,18 @@ export const startContainer = async (
   const container = await docker().createContainer({
     Image: imageName,
     name: containerName,
+    HostConfig: {
+      Privileged: true,
+    },
   });
   return container?.start();
 };
 
-const pullImage = async (imageName: string) => {
+const pullImage = async (imageName: string, count?: number) => {
   const images = await docker().listImages();
+  if (count == 0) {
+    return;
+  }
   for (var image of images) {
     if ((image.RepoTags ? image.RepoTags : []).includes(imageName)) {
       return;
@@ -37,7 +43,7 @@ const pullImage = async (imageName: string) => {
   }
   await docker().pull(imageName);
   await sleep(500);
-  await pullImage(imageName);
+  await pullImage(imageName, 9);
 };
 
 /*
@@ -49,7 +55,7 @@ export const startNewContainer = async (
 ) => {
   await killContainer(containerName);
   await startContainer(containerName, imageName);
-  await waitForContainerRunning(containerName);
+  //await waitForContainerRunning(containerName);
 };
 
 async function sleep(ms: number): Promise<void> {
