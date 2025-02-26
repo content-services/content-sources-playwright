@@ -33,16 +33,30 @@ test("Test container", async ({}) => {
   await killContainer("my_container");
 });
 
-test("Test2 container", async ({}) => {
+test("Test2 container", async ({}, testInfo) => {
+  testInfo.setTimeout(5 * 60 * 1000); // Five minutes
+
   const client = new RHSMClient("TemplateTest");
 
   await client.Boot("rhel9");
-  const reg = await client.Register("satellite-clone-dolly", "5894300");
+  const reg = await client.RegisterSubMan("satellite-clone-dolly", "5894300");
   if (reg?.exitCode != 0) {
     console.log(reg?.stdout);
     console.log(reg?.stderr);
   }
   expect(reg?.exitCode).toBe(0);
+
+  const notExist = await client.Exec(["rpm", "-q", "vim-enhanced"]);
+  expect(notExist?.exitCode).not.toBe(0);
+
+  const yumInstall = await client.Exec(
+    ["yum", "install", "-y", "vim-enhanced"],
+    60000
+  );
+  expect(yumInstall?.exitCode).toBe(0);
+
+  const exist = await client.Exec(["rpm", "-q", "vim-enhanced"]);
+  expect(exist?.exitCode).toBe(0);
 
   await client.Destroy();
 });
