@@ -1,3 +1,4 @@
+import { time } from "console";
 import Dockerode, { Container } from "dockerode";
 import { PassThrough } from "stream";
 import { finished } from "stream/promises";
@@ -112,7 +113,7 @@ export const killContainer = async (containerName: string) => {
   return c?.remove();
 };
 
-interface ExecReturn {
+export interface ExecReturn {
   stdout?: string;
   stderr?: string;
   exitCode?: number | null;
@@ -121,20 +122,36 @@ interface ExecReturn {
 // Runs a non-interactive command and returns stdout, stderr, and the exit code
 export const runCommand = async (
   containerName: string,
-  command: string[]
+  command: string[],
+  timeout_ms?: number
 ): Promise<ExecReturn | void> => {
   console.log("Running " + command + " on " + containerName);
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const timeout = setTimeout(() => {
+    console.error("Timeout reached for command (" + command + ")");
+    controller.abort();
+  }, timeout_ms || 500);
+
   const c = await getContainer(containerName);
   const exec = await c?.exec({
     Cmd: command,
     AttachStdout: true,
     AttachStderr: true,
+    Privileged: true,
+    abortSignal: signal,
   });
   if (exec == undefined) {
     return undefined;
   }
 
-  const execStream = await exec?.start({});
+  const execStream = await exec?.start({
+    abortSignal: signal,
+  });
+
+  clearTimeout(timeout);
   if (execStream == undefined) {
     return undefined;
   }
