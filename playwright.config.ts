@@ -56,7 +56,7 @@ export default defineConfig({
         },
         {
 
-            name: 'Chromium',
+            name: 'chromium',
             grepInvert: !!process.env.PROD ? [/preview-only/, /switch-to-preview/] : [/switch-to-preview/],
             use: {
                 ...devices['Desktop Chrome'],
