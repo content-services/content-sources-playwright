@@ -53,14 +53,14 @@ export default defineConfig({
                 storageState: `.auth/${process.env.USER1USERNAME}.json`,
             },
             dependencies: ['setup'],
-        },      { name: 'setup', testMatch: /.*\.setup\.ts/ },
+        },
         {
 
-            name: 'setup2',
+            name: 'Chromium',
             grepInvert: !!process.env.PROD ? [/preview-only/, /switch-to-preview/] : [/switch-to-preview/],
             use: {
                 ...devices['Desktop Chrome'],
-                storageState: `.auth/${process.env.USER1USERNAME}.json`,
+                storageState: `.auth/${process.env.USER2USERNAME}.json`,
             },
             dependencies: ['setup'],
         },
@@ -82,7 +82,7 @@ export default defineConfig({
                     ...devices['Desktop Chrome'],
                     storageState: `.auth/${process.env.USER2USERNAME}.json`,
                 },
-                dependencies: ['Switch to preview'],
+                dependencies: ['setup'],
             }] : [],
     ],
 });
