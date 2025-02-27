@@ -22,6 +22,7 @@ describe("Setup", async () => {
       process.env.USER1PASSWORD
     );
   });
+
   // Example of how to add another user
   setup("Authenticate user 2", async ({ page }) => {
     await closePopupsIfExist(page);
@@ -32,10 +33,10 @@ describe("Setup", async () => {
         process.env.USER2PASSWORD
     );
     // Example of how to switch to user
-    await switchToUser(page, process.env.USER1USERNAME!);
-    await ensureNotInPreview(page);
+    // await switchToUser(page, process.env.USER1USERNAME!);
+    // await ensureNotInPreview(page);
     // Other users for other tests can be added below after logging out
-    await switchToUser(page, process.env.USER2USERNAME!);
-    await ensureNotInPreview(page);
+    // await switchToUser(page, process.env.USER2USERNAME!);
+    // await ensureNotInPreview(page);
   });
 });
