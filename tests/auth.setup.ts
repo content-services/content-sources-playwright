@@ -5,6 +5,7 @@ import {
   switchToUser,
   logInWithUsernameAndPassword,
   ensureNotInPreview,
+  logout,
 } from "./helpers/loginHelpers";
 import { describe } from "node:test";
 
