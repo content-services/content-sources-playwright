@@ -12,41 +12,11 @@ const docker = (): Dockerode => {
   return new Docker({ socketPath: process.env.DOCKER_SOCKET! });
 };
 
-// Starts a container, should not already be running, image should already be pulled
-export const startContainer = async (
-  containerName: string,
-  imageName: string
-) => {
-  await pullImage(imageName);
-  console.log("starting container " + containerName);
-  const container = await docker().createContainer({
-    Image: imageName,
-    name: containerName,
-    HostConfig: {
-      Privileged: true,
-    },
-  });
-  return container?.start();
-};
-
-// Pulls an image and waits for it to finish, up to 5 seconds
-const pullImage = async (imageName: string, count?: number) => {
-  const images = await docker().listImages();
-  if (count == 0) {
-    return;
-  }
-  for (var image of images) {
-    if ((image.RepoTags ? image.RepoTags : []).includes(imageName)) {
-      return;
-    }
-  }
-  await docker().pull(imageName);
-  await sleep(500);
-  await pullImage(imageName, 9);
-};
-
-/*
- * starts a container and kills one if it already exists with the same name
+/**
+ * starts a container, killing the existing one if its present
+ *
+ * @param containerName customizable name ("my_container)" to give to your container.  Could be the test name, or something linking it to the test.
+ * @param imageName full image name and tag:  "localhost/my_image:latest"
  */
 export const startNewContainer = async (
   containerName: string,
@@ -59,6 +29,46 @@ export const startNewContainer = async (
 async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * Starts a container, should not already be running, image should already be pulled
+ * @param containerName customizable name ("my_container)" to give to your container.  Could be the test name, or something linking it to the test.
+ * @param imageName full image name and tag:  "localhost/my_image:latest"
+ * @returns
+ */
+const startContainer = async (containerName: string, imageName: string) => {
+  await pullImage(imageName);
+  console.log("starting container " + containerName);
+  const container = await docker().createContainer({
+    Image: imageName,
+    name: containerName,
+    HostConfig: {
+      Privileged: true,
+    },
+  });
+  return container?.start();
+};
+
+/**
+ * Pulls an image and waits for it to finish, up to 5 seconds
+ *
+ * @param imageName the full image name (localhost/my-image:latest)
+ * @param retryCount number of times to retry the pull until its successful (defaults to 5)
+ */
+const pullImage = async (imageName: string, retryCount?: number) => {
+  const images = await docker().listImages();
+  if (retryCount == 0) {
+    return;
+  }
+  for (var image of images) {
+    if ((image.RepoTags ? image.RepoTags : []).includes(imageName)) {
+      return;
+    }
+  }
+  await docker().pull(imageName);
+  await sleep(500);
+  await pullImage(imageName, (retryCount || 5) - 1);
+};
 
 const waitForContainer = async (name: string): Promise<Container | void> => {
   var container = await getContainer(name);
@@ -101,13 +111,18 @@ const getContainer = async (name: string): Promise<Container | void> => {
   }
 };
 
+/**
+ * Kills the running container and deletes it
+ * @param containerName the user provided container to kill
+ * @returns
+ */
 export const killContainer = async (containerName: string) => {
   const info = await getContainerInfo(containerName);
   const c = await getContainer(containerName);
   if (info?.State == "running") {
     await c?.kill();
   }
-  return c?.remove();
+  await c?.remove();
 };
 
 export interface ExecReturn {
@@ -116,8 +131,17 @@ export interface ExecReturn {
   exitCode?: number | null;
 }
 
-// Runs a non-interactive command and returns stdout, stderr, and the exit code
+//
 // Defaults to a 500 ms timeout unless timeout is specified
+
+/**
+ * Runs a non-interactive command and returns stdout, stderr, and the exit code
+ *
+ * @param containerName the human readable container name to execute the command
+ * @param command the command to execute
+ * @param timeout_ms timeout (in milliseconds) the command should execute in (defaults to 500ms)
+ * @returns ExecReturn containing stdout, stderr, exitCode
+ */
 export const runCommand = async (
   containerName: string,
   command: string[],

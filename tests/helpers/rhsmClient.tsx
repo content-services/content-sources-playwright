@@ -6,27 +6,51 @@ import {
   startNewContainer,
 } from "./containers";
 
+/**
+ * Supported Operating System versions
+ */
 export type OSVersion = "rhel9" | "rhel8";
 
+/**
+ * List of containers to use
+ */
 const RemoteImages = {
   rhel9: "quay.io/jlsherri/client-rhel9:latest",
   rhel8: "localhost/client-rhel9:latest",
 };
 
+/**
+ * Class to start and manage a registered RHSM/insights client
+ */
 export class RHSMClient {
   name: string;
   constructor(name: string) {
     this.name = name;
   }
 
+  /**
+   * Starts an rhsm client contianer
+   * @param version OS and version to boot
+   * @returns
+   */
   async Boot(version: OSVersion) {
     return startNewContainer(this.name, RemoteImages[version]);
   }
 
+  /**
+   * configures this client for stage registration
+   * @returns
+   */
   async ConfigureForStage() {
     return runCommand(this.name, stageConfigureCommand());
   }
 
+  /**
+   * Registers to configured environment using RHC
+   * @param activationKey key to register with.  Defaults to $ACTIVATION_KEY_1
+   * @param orgId orgId to register with.  Defaults to $ORG_ID_1
+   * @returns
+   */
   async RegisterRHC(activationKey?: string, orgId?: string) {
     if (!process.env.PROD) {
       await this.ConfigureForStage();
@@ -45,6 +69,12 @@ export class RHSMClient {
     );
   }
 
+  /**
+   * Register using subscription-manager (won't show up in insights)
+   * @param activationKey key to register with.  Defaults to $ACTIVATION_KEY_1
+   * @param orgId orgId to register with.  Defaults to $ORG_ID_1
+   * @returns
+   */
   async RegisterSubMan(activationKey?: string, orgId?: string) {
     if (!process.env.PROD) {
       await this.ConfigureForStage();
@@ -72,14 +102,27 @@ export class RHSMClient {
     );
   }
 
+  /**
+   * Run an arbitrary command on the host
+   * @param command Command to run
+   * @param timeout Timeout in ms to cancel the command, defaults to 500ms
+   * @returns
+   */
   async Exec(command: string[], timeout?: number): Promise<ExecReturn | void> {
     return runCommand(this.name, command, timeout);
   }
 
+  /**
+   * Unregister with subscription-manager
+   * @returns
+   */
   async Unregister() {
     return runCommand(this.name, ["subscription-manager", "unregister"]);
   }
 
+  /**
+   * Unregister and destroy the client container
+   */
   async Destroy() {
     const cmd = await this.Unregister();
     console.log(cmd?.stdout);
