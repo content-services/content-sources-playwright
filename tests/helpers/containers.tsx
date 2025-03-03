@@ -53,21 +53,37 @@ const startContainer = async (containerName: string, imageName: string) => {
  * Pulls an image and waits for it to finish, up to 5 seconds
  *
  * @param imageName the full image name (localhost/my-image:latest)
- * @param retryCount number of times to retry the pull until its successful (defaults to 5)
+ * @param retryCount number of times to retry the pull until its successful (defaults to 3)
+ * @param waitTime amount of time to wait for each pull
  */
-const pullImage = async (imageName: string, retryCount?: number) => {
-  const images = await docker().listImages();
+const pullImage = async (
+  imageName: string,
+  retryCount?: number,
+  waitTime?: number
+) => {
+  var sleepTime = waitTime || 10000;
   if (retryCount == 0) {
     return;
   }
+  await docker().pull(imageName);
+  while (sleepTime > 0) {
+    if (await imagePresent(imageName)) {
+      return true;
+    }
+    sleep(1000);
+    sleepTime -= 1000;
+  }
+  await pullImage(imageName, (retryCount || 3) - 1, waitTime);
+};
+
+const imagePresent = async (imageName: string): Promise<boolean> => {
+  const images = await docker().listImages();
   for (var image of images) {
     if ((image.RepoTags ? image.RepoTags : []).includes(imageName)) {
-      return;
+      return true;
     }
   }
-  await docker().pull(imageName);
-  await sleep(500);
-  await pullImage(imageName, (retryCount || 5) - 1);
+  return false;
 };
 
 const waitForContainer = async (name: string): Promise<Container | void> => {
