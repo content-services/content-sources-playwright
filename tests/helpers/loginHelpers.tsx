@@ -84,7 +84,8 @@ export const throwIfMissingEnvVariables = () => {
     "USER1USERNAME",
     "USER1PASSWORD",
     "BASE_URL",
-    "PROXY",
+    "ORG_ID_1",
+    "ACTIVATION_KEY_1",
   ];
 
   if (!process.env.PROD) ManditoryEnvVariables.push("PROXY");
