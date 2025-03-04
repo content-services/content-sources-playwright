@@ -70,7 +70,7 @@ const pullImage = async (
     if (await imagePresent(imageName)) {
       return true;
     }
-    sleep(1000);
+    await sleep(1000);
     sleepTime -= 1000;
   }
   await pullImage(imageName, (retryCount || 3) - 1, waitTime);
