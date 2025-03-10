@@ -15,8 +15,9 @@ export type OSVersion = "rhel9" | "rhel8";
  * List of containers to use
  */
 const RemoteImages = {
-  rhel9: "quay.io/jlsherri/client-rhel9:latest",
-  rhel8: "localhost/client-rhel9:latest",
+  rhel9: "quay.io/swadeley/ubi9_rhc_prod:latest",
+  rhel8: "quay.io/swadeley/ubi8_rhc_prod:latest",
+  rhel9dev: "quay.io/swadeley/ubi9_rhc_dev_prod:latest",
 };
 
 /**
