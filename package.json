@@ -14,7 +14,8 @@
   "devDependencies": {
     "@playwright/test": "^1.49.1",
     "@currents/playwright": "^1.9.4",
-    "@types/node": "^22.9.0"
+    "@types/node": "^22.9.0",
+    "dayjs": "^1.11.13"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
