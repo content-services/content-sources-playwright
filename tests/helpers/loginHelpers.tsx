@@ -53,7 +53,7 @@ export const logInWithUsernameAndPassword = async (
   }).toPass();
 };
 
-export const switchToUser = async (page: Page, userName: string) => {
+export const setCookieForUser = async (page: Page, userName: string) => {
   const { cookies } = await page.context().storageState({
     path: path.join(__dirname, `../../.auth/${userName}.json`),
   });
