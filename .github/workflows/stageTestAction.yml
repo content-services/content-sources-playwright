@@ -12,7 +12,7 @@ concurrency:
 jobs:
   Playwright-integration-test:
     runs-on:
-      - codebuild-content-services-integration-repo-${{ github.run_id }}-${{ github.run_attempt }}
+      - codebuild-content-services-int-repo-${{ github.run_id }}-${{ github.run_attempt }}
       - instance-size:small
       - buildspec-override:true
 
