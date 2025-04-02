@@ -18,6 +18,8 @@
     "dayjs": "^1.11.13"
   },
   "dependencies": {
+    "@types/dockerode": "^3.3.34",
+    "dockerode": "^4.0.4",
     "dotenv": "^16.4.7",
     "github-actions-ctrf": "^0.0.58",
     "playwright-ctrf-json-reporter": "^0.0.18"
