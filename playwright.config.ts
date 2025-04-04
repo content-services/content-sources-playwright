@@ -49,7 +49,7 @@ export default defineConfig({
         { name: 'setup', testMatch: /.*\.setup\.ts/ },
         {
             name: 'chromium',
-            grepInvert: !!process.env.PROD ? [/preview-only/, /switch-to-preview/] : [/switch-to-preview/],
+            grepInvert: !!process.env.PROD ? [/preview-only/, /switch-to-preview/, /local-only/] : [/switch-to-preview/, /local-only/],
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: `.auth/${process.env.USER1USERNAME}.json`,
