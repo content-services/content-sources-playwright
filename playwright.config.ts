@@ -68,7 +68,7 @@ export default defineConfig({
       grep: [/read-only/],
       use: {
         ...devices["Desktop Chrome"],
-        storageState: `.auth/${process.env.STAGE_RO_USER_USERNAME}.json`,
+        storageState: `.auth/${process.env.RO_USER_USERNAME}.json`,
       },
       dependencies: ["setup"],
     },
