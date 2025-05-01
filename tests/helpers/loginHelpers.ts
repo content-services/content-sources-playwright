@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import path from "path";
+import fs from "fs";
 
 export const logout = async (page: Page) => {
   const button = await page
@@ -17,6 +18,44 @@ export const logout = async (page: Page) => {
   await expect(async () => {
     expect(page.url()).not.toBe("/insights/content/repositories");
   }).toPass();
+};
+
+// Inline reading and parsing of the JSON file
+const queryJsonFile = (filePath: string) => {
+  try {
+    const data = fs.readFileSync(filePath, "utf-8"); // Read the file synchronously
+    const jsonData = JSON.parse(data); // Parse the JSON data
+    return jsonData; // Return the parsed JSON data
+  } catch (error) {
+    console.error("Error reading or parsing the JSON file:", error);
+    return null;
+  }
+};
+
+export const switchToUser = async (page: Page, userName: string) => {
+  const storagePath = path.join(__dirname, `../../.auth/${userName}.json`);
+  const storedData = queryJsonFile(storagePath);
+
+  const jwtCookie = storedData.cookies.find(
+    (cookie: { name: string }) => cookie.name === "cs_jwt"
+  );
+  if (!jwtCookie || !jwtCookie.value) {
+    throw new Error(
+      `No valid cs_jwt cookie found in storage state for user ${userName} at ${storagePath}`
+    );
+  }
+
+  // This is the main thing that this function does, sets the jwt for the API!
+  process.env.TOKEN = `Bearer ${jwtCookie.value}`;
+  await page.waitForTimeout(100);
+};
+
+export const storeUserAuth = async (page: Page, userName: string) => {
+  const storagePath = path.join(__dirname, `../../.auth/${userName}.json`);
+  // this stores the data in the json file at .auth/xxxx.json
+  await page.context().storageState({
+    path: storagePath,
+  });
 };
 
 export const logInWithUsernameAndPassword = async (
@@ -46,27 +85,11 @@ export const logInWithUsernameAndPassword = async (
   await passwordField.fill(password);
   await passwordField.press("Enter");
 
-  await expect(async () => {
-    expect(page.url()).toContain(
-      `${process.env.BASE_URL}/insights/content/repositories`
-    );
-  }).toPass();
-};
+  await expect(
+    page.getByRole("heading", { name: "Repositories", exact: false })
+  ).toBeVisible();
 
-export const switchToUser = async (page: Page, userName: string) => {
-  const storagePath = path.join(__dirname, `../../.auth/${userName}.json`);
-  const { cookies } = await page.context().storageState({
-    path: storagePath,
-  });
-
-  const jwtCookie = cookies.find((cookie) => cookie.name === "cs_jwt");
-
-  if (!jwtCookie || !jwtCookie.value) {
-    throw new Error(`No valid cs_jwt cookie found in storage state for user ${userName} at ${storagePath}`);
-  }
-
-  process.env.TOKEN = `Bearer ${jwtCookie.value}`;
-  await page.waitForTimeout(100);
+  await storeUserAuth(page, username);
 };
 
 export const closePopupsIfExist = async (page: Page) => {
@@ -87,8 +110,8 @@ export const closePopupsIfExist = async (page: Page) => {
 
 export const throwIfMissingEnvVariables = () => {
   const ManditoryEnvVariables = [
-    "USER1USERNAME",
-    "USER1PASSWORD",
+    "ADMIN_USERNAME",
+    "ADMIN_PASSWORD",
     "BASE_URL",
     "ORG_ID_1",
     "ACTIVATION_KEY_1",
