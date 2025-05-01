@@ -52,45 +52,29 @@ export default defineConfig({
       : {}),
   },
   projects: [
-    { name: "setup", testMatch: /.*\.setup\.ts/ },
+    { name: "setup", testMatch: /auth\.setup\.ts/ },
     {
-      name: "chromium", // 'Run admin user tests',
+      name: "AdminTests", // 'Run admin user tests',
       grepInvert: [/read-only/], // !!process.env.PROD ? [/preview-only/, /switch-to-preview/],  ] : [/switch-to-preview/],
       use: {
         ...devices["Desktop Chrome"],
-        storageState: `.auth/${process.env.USER1USERNAME}.json`,
+        storageState: `./.auth/${process.env.ADMIN_USERNAME}.json`, // Thise is setting the cookies
       },
       dependencies: ["setup"],
     },
-
     {
-      name: "chromium", // 'Run read-only user tests',
+      name: "SwitchToUser2",
+      testMatch: /.switchToUser2\.setup\.ts/,
+      dependencies: ["setup"],
+    },
+    {
+      name: "ReadOnlyTests", // 'Run read-only user tests',
       grep: [/read-only/],
       use: {
         ...devices["Desktop Chrome"],
-        storageState: `.auth/${process.env.RO_USER_USERNAME}.json`,
+        storageState: `.auth/${process.env.READONLY_USERNAME}.json`,
       },
-      dependencies: ["setup"],
+      dependencies: ["SwitchToUser2"],
     },
-    // ...!!process.env.PROD ?
-    //     [{
-    //         name: 'Switch to preview',
-    //         grep: [/switch-to-preview/],
-    //         use: {
-    //             ...devices['Desktop Chrome'],
-    //             storageState: `.auth/${process.env.USER1USERNAME}.json`,
-
-    //         },
-    //         dependencies: ['setup'],//'chromium',
-    //     },
-    //     {
-    //         name: 'Run preview only',
-    //         grep: [/preview-only/],
-    //         use: {
-    //             ...devices['Desktop Chrome'],
-    //             storageState: `.auth/${process.env.USER1USERNAME}.json`,
-    //         },
-    //         dependencies: ['Switch to preview'],
-    //     }] : [],
   ],
 });
