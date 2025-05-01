@@ -19,14 +19,25 @@ describe("Setup", async () => {
 
   setup("Authenticate all the users", async ({ page }) => {
     await closePopupsIfExist(page);
+    await expect(page.locator('body')).toBeVisible();
+    console.log('Page URL before login:', page.url());
     await logInWithUsernameAndPassword(
       page,
       process.env.USER1USERNAME,
       process.env.USER1PASSWORD
     );
+    const cookies = await page.context().cookies();
+    console.log('Cookies after Admin login:', cookies);
+    // wait longer to see if cookie is available
+    await expect(
+      page.getByRole('heading', { name: 'Repositories', exact: false }),
+    ).toBeVisible();
     await page.context().storageState({ path: authFile });
 
+    console.log('Cookies before Admin logout:', await page.context().cookies());
     await logout(page);
+    console.log('Cookies after Admin logout:', await page.context().cookies());
+
     await logInWithUsernameAndPassword(
       page,
       process.env.RO_USER_USERNAME,
