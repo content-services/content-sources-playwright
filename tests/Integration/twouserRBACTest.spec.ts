@@ -22,19 +22,18 @@ const getRepoName = (): string => {
   return repoName;
 };
 
-// Clean up the repo name file
-test.beforeAll(async () => {
-  if (fs.existsSync(repoNameFile)) {
-    fs.unlinkSync(repoNameFile);
-    console.log("Cleaned up repoName.txt");
-  }
-});
+
 
 const url = randomUrl();
 
 test.describe("Combined user tests", () => {
   test("Login as user 1 (admin)", async ({ page }) => {
     await test.step("Navigate to the repository page", async () => {
+      // Clean up the repo name file
+      if (fs.existsSync(repoNameFile)) {
+        fs.unlinkSync(repoNameFile);
+      };
+      console.log("Cleaned up repoName.txt");
       console.log("\n   Try to delete old repos\n");
       await deleteAllRepos(page, `&search=${repoNamePrefix}`);
       await navigateToRepositories(page);
@@ -99,15 +98,7 @@ test.describe("Combined user tests", () => {
         const row = await getRowByNameOrUrl(page, `${repoName}-Edited`);
         await expect(row.getByText("Valid")).toBeVisible({ timeout: 60000 });
         await row.getByLabel("Kebab toggle").click();
-        await row.getByRole("menuitem", { name: "Edit" }).click();
-        await expect(
-          page.getByText(
-            "You do not have the required permissions to perform this action"
-          )
-        ).toBeVisible();
-        await expect(
-          page.getByRole("dialog", { name: "Edit custom repository" })
-        ).not.toBeVisible();
+        await expect(row.getByRole("menuitem", { name: "Edit" })).not.toBeVisible();
       });
     }
   );
