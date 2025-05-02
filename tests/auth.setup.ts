@@ -4,7 +4,7 @@ import {
   closePopupsIfExist,
   switchToUser,
   logInWithUsernameAndPassword,
-  ensureNotInPreview,
+  logout,
 } from "./helpers/loginHelpers";
 import { describe } from "node:test";
 
@@ -13,23 +13,25 @@ describe("Setup", async () => {
     expect(() => throwIfMissingEnvVariables()).not.toThrow();
   });
 
-  setup("Authenticate user 1", async ({ page }) => {
+  setup("Authenticate all the users", async ({ page }) => {
     await closePopupsIfExist(page);
+
     await logInWithUsernameAndPassword(
       page,
-      process.env.USER1USERNAME,
-      process.env.USER1PASSWORD
+      process.env.READONLY_USERNAME,
+      process.env.READONLY_PASSWORD
     );
-    // Example of how to add another user
-    // await logout(page)
-    // await logInWithUsernameAndPassword(
-    //     page,
-    //     process.env.USER2USERNAME,
-    //     process.env.USER2PASSWORD
-    // );
-    // Example of how to switch to said user
-    await switchToUser(page, process.env.USER1USERNAME!);
-    await ensureNotInPreview(page);
-    // Other users for other tests can be added below after logging out
+
+    await logout(page);
+
+    await logInWithUsernameAndPassword(
+      page,
+      process.env.ADMIN_USERNAME,
+      process.env.ADMIN_PASSWORD
+    );
+
+    await switchToUser(page, process.env.ADMIN_USERNAME!);
+
+    // We do this as we run admin tests first.
   });
 });

@@ -41,8 +41,8 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "USER1USERNAME=$USER1USERNAME" >> .env
-          echo "USER1PASSWORD=$USER1PASSWORD" >> .env
+          echo "ADMIN_USERNAME=$ADMIN_USERNAME" >> .env
+          echo "ADMIN_PASSWORD=$ADMIN_PASSWORD" >> .env
           echo "BASE_URL=$BASE_URL" >> .env
           echo "PROXY=$PROXY" >> .env
           echo "TOKEN=apple" >> .env
