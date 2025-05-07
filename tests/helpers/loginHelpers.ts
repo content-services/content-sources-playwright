@@ -47,6 +47,7 @@ export const switchToUser = async (page: Page, userName: string) => {
 
   // This is the main thing that this function does, sets the jwt for the API!
   process.env.TOKEN = `Bearer ${jwtCookie.value}`;
+  console.log(`The jwt cookie for ${userName} is: ${jwtCookie.value}`);
   await page.waitForTimeout(100);
 };
 
@@ -86,15 +87,19 @@ export const logInWithUsernameAndPassword = async (
   await passwordField.press("Enter");
 
   await expect(
-    page.getByRole("heading", { name: "Repositories", exact: false })
+    page.getByText('View all repositories within your organization.')
+      .or(page.getByText('Add repositories now', { exact: true }))
   ).toBeVisible();
 
   await storeUserAuth(page, username);
+  const cookies = await page.context().cookies();
+  const csJwtCookie = cookies.find(cookie => cookie.name === "cs_jwt");
+  console.log(`cs_jwt cookie value for ${username}:`, csJwtCookie?.value || "Not found");
 };
 
 export const closePopupsIfExist = async (page: Page) => {
   const locatorsToCheck = [
-    page.locator(".pf-v6-c-modal-box__close > button"),
+    page.locator(".pf-v5-c-modal-box__close > button"),
     page.locator(".pf-v5-c-alert.notification-item button"), // This closes all toast pop-ups
     page.locator(`button[id^="pendo-close-guide-"]`), // This closes the pendo guide pop-up
     page.locator(`button[id="truste-consent-button"]`), // This closes the trusted consent pup-up
