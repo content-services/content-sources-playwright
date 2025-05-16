@@ -58,7 +58,7 @@ export default defineConfig({
       grepInvert: [/read-only/], // !!process.env.PROD ? [/preview-only/, /switch-to-preview/],  ] : [/switch-to-preview/],
       use: {
         ...devices["Desktop Chrome"],
-        storageState: `./.auth/${process.env.ADMIN_USERNAME}.json`, // Thise is setting the cookies
+        storageState: `./.auth/${process.env.ADMIN_USERNAME}.json`, // This is setting the cookies
       },
       dependencies: ["setup"],
     },
