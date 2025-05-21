@@ -8,6 +8,12 @@ import {
 } from "./helpers/loginHelpers";
 import { describe } from "node:test";
 
+import { existsSync, mkdirSync } from 'fs';
+const authDir = '.auth';
+if (!existsSync(authDir)) {
+  mkdirSync(authDir);
+}
+
 describe("Setup", async () => {
   setup("Ensure needed ENV variables exist", async ({}) => {
     expect(() => throwIfMissingEnvVariables()).not.toThrow();
