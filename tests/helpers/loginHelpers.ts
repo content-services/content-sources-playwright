@@ -87,8 +87,9 @@ export const logInWithUsernameAndPassword = async (
 
 
   await expect(
-    page.getByRole("heading", { name: "Repositories", exact: false })
-  ).toBeVisible();
+    page.getByText('View all repositories within your organization.')
+      .or(page.getByText('Add repositories now', { exact: true }))
+   ).toBeVisible();
 
   await storeUserAuth(page, username);
 };
