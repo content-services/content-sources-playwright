@@ -47,25 +47,19 @@ export const logInWithUsernameAndPassword = async (
   await passwordField.press("Enter");
 
   await expect(async () => {
-    expect(page.url()).toContain(
+    expect(page.url()).toBe(
       `${process.env.BASE_URL}/insights/content/repositories`
     );
   }).toPass();
 };
 
 export const switchToUser = async (page: Page, userName: string) => {
-  const storagePath = path.join(__dirname, `../../.auth/${userName}.json`);
   const { cookies } = await page.context().storageState({
-    path: storagePath,
+    path: path.join(__dirname, `../../.auth/${userName}.json`),
   });
-
-  const jwtCookie = cookies.find((cookie) => cookie.name === "cs_jwt");
-
-  if (!jwtCookie || !jwtCookie.value) {
-    throw new Error(`No valid cs_jwt cookie found in storage state for user ${userName} at ${storagePath}`);
-  }
-
-  process.env.TOKEN = `Bearer ${jwtCookie.value}`;
+  process.env.TOKEN = `Bearer ${
+    cookies.find((cookie) => cookie.name === "cs_jwt")?.value
+  }`;
   await page.waitForTimeout(100);
 };
 
