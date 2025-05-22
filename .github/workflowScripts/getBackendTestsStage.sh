@@ -18,6 +18,9 @@ git clone --branch $BRANCH $REPO_URL $TEMP_DIR
 # Copy the specific folder to the local directory
 cp -r $TEMP_DIR/_playwright-tests/tests/$FOLDER_PATH $LOCAL_DIR
 
+
+cp -r $TEMP_DIR/_playwright-tests/test-utils/ ./
+
 # Clean up the temporary directory
 rm -rf $TEMP_DIR
 

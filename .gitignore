@@ -6,6 +6,7 @@ node_modules/
 /playwright/.cache/
 /tests/API
 /tests/UI
+/test-utils/
 .DS_Store
 .env
 .auth
