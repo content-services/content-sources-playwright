@@ -55,11 +55,11 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
-      - name: Install dependencies
-        run: yarn install
-
       - name: Get front-end/backend-tests
         run: yarn get-tests
+          
+      - name: Install dependencies
+        run: yarn install
 
       - name: Install Playwright Browsers
         run: yarn playwright install --with-deps
@@ -80,3 +80,14 @@ jobs:
           name: playwright-report
           path: ./playwright-ctrf
           retention-days: 10
+      - name: Slack Notification
+        if: github.event_name != 'pull_request'
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://jlsherrill.fedorapeople.org/nightly.png
+          SLACK_TITLE: Nightly Stage Test
+          SLACK_USERNAME: Content Sources
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE_ON_SUCCESS: "Nightly stage tests successful!"
+          SLACK_MESSAGE_ON_FAILURE: "Nightly stage tests FAILED :("

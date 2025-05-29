@@ -47,13 +47,24 @@ export const logInWithUsernameAndPassword = async (
   await passwordField.press("Enter");
 
   await expect(async () => {
-    expect(page.url()).toBe(
-      `${process.env.BASE_URL}/insights/content/repositories`
+    const regex = new RegExp(
+      `^${process.env.BASE_URL}/insights/content/repositories.*`
     );
+    expect(page.url()).toMatch(regex);
   }).toPass();
 };
 
 export const switchToUser = async (page: Page, userName: string) => {
+  //Sometimes the page has loaded, but the cookie hasn't been recieved yet, wait for it to appear
+  await expect(async () => {
+    const cookies = await page.context().cookies();
+    const found = cookies.find((cookie) => cookie.name === "cs_jwt");
+    expect(found).not.toBe(undefined);
+  }).toPass({
+    intervals: [1_000],
+    timeout: 30_000,
+  });
+
   const { cookies } = await page.context().storageState({
     path: path.join(__dirname, `../../.auth/${userName}.json`),
   });

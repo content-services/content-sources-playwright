@@ -16,7 +16,8 @@
     "@currents/playwright": "^1.9.4",
     "@types/node": "^22.9.0",
     "dayjs": "^1.11.13",
-    "pg": "^8.14.1"
+    "pg": "^8.14.1",
+    "content-sources-test-utils": "file:./test-utils"
   },
   "dependencies": {
     "@types/dockerode": "^3.3.34",

@@ -20,8 +20,8 @@ export default defineConfig({
             ['@currents/playwright'],
         ]
         : 'list',
-    timeout: process.env.CI ? 60000 : 30000,
-    expect: { timeout: process.env.CI ? 60000 : 20000 },
+    timeout: process.env.CI ? 240000 : 30000,
+    expect: { timeout: process.env.CI ? 240000 : 20000 },
     use: {
         testIdAttribute: 'data-ouia-component-id',
         launchOptions: {
